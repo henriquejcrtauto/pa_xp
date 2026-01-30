@@ -30,8 +30,12 @@ def gera_df(caminho):
 
     # Preço médio por estado
     df_media_por_uf = df_filt_produto.groupby(['Regiao', 'UF'])['Valor de Venda'].mean().reset_index()
+
     # Renomeando as colunas para ficar mais claro
     df_media_por_uf.columns = ['Regiao', 'UF', 'Valor Medio']
+
+    # Arredondando o valor para 2 casas decimais
+    df_media_por_uf['Valor Medio'] = df_media_por_uf['Valor Medio'].round(2)
 
     # Quantidade de postos pesquisados por estado
     df_qtd_postos_por_uf = df_filt_produto.groupby(['Regiao', 'UF'])['CNPJ da Revenda'].count().reset_index()
