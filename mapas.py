@@ -1,0 +1,49 @@
+import plotly.express as px
+
+# 1. Configuração do Mapa Coroplético Animado
+# Nota: É necessário um arquivo GeoJSON das UFs do Brasil. 
+# Exemplo de URL pública para o GeoJSON:
+geojson_url = "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson"
+
+def criar_mapa_animado(df_consolidado):
+    # O animation_frame cria o slider de tempo (Semestres)
+    fig_mapa = px.choropleth(
+        df_consolidado,
+        geojson=geojson_url,
+        locations='UF', # Coluna do seu CSV
+        featureidkey="properties.sigla", # Chave correspondente no GeoJSON
+        color='Valor Medio',
+        animation_frame='Data Inicial', # Cria a linha do tempo de 2004 a 2025
+        range_color=[df_consolidado['Valor Medio'].min(), df_consolidado['Valor Medio'].max()],
+        color_continuous_scale="Reds",
+        scope="south america",
+        labels={'Valor Medio': 'Preço Médio (R$)'},
+        title="Expansão dos Preços dos Combustíveis no Brasil (2004-2025)"
+    )
+    
+    # Focar o mapa apenas no Brasil
+    fig_mapa.update_geos(fitbounds="locations", visible=False)
+    fig_mapa.update_layout(margin={"r":0,"t":50,"l":0,"b":0})
+    
+    return fig_mapa
+
+# 2. Configuração do Boxplot Regional
+def criar_boxplot_regional(df_consolidado):
+    fig_box = px.box(
+        df_consolidado,
+        x="Regiao",
+        y="Valor Medio",
+        color="Regiao",
+        points="all", # Mostra todos os pontos (semestres) para ver a dispersão
+        title="Dispersão de Preços por Região (Acumulado Histórico)",
+        color_discrete_sequence=px.colors.qualitative.Prism
+    )
+    
+    fig_box.update_layout(
+        xaxis_title="Região do Brasil",
+        yaxis_title="Preço Médio Semestral (R$)",
+        showlegend=False,
+        template="plotly_white"
+    )
+    
+    return fig_box
